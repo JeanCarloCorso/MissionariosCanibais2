@@ -1,11 +1,58 @@
+# -*- coding: utf-8 -*-
+import time
+
+opcoesBote = [
+        [0,2], #coluna 0 padres coluna 1 canibais
+        [0,1],
+        [2,0],
+        [1,1],
+        [1,0]
+    ]
+quantia = [3,0,3,0]
+
+def barco(jogada, dire):
+    if(dire == 0):
+        if((quantia[0] >= opcoesBote[jogada][0]) and (quantia[2] >= opcoesBote[jogada][1])):
+            quantia[0] -= opcoesBote[jogada][0]
+            quantia[1] += opcoesBote[jogada][0]
+            quantia[2] -= opcoesBote[jogada][1]
+            quantia[3] += opcoesBote[jogada][1]
+
+    else:
+        if((quantia[1] >= opcoesBote[jogada][0]) and (quantia[3] >= opcoesBote[jogada][1])):
+            quantia[1] -= opcoesBote[jogada][0]
+            quantia[0] += opcoesBote[jogada][0]
+            quantia[3] -= opcoesBote[jogada][1]
+            quantia[2] += opcoesBote[jogada][1]
+
+def objetivo():
+    if(quantia == [0,3,0,3]):
+        return True
+    return False
+
+def mortes():
+    if((quantia[0] < quantia[2]) or (quantia[1] < quantia[3])):
+        return True
+    return False
+
+def refaz(jogada, sentido):
+    if(sentido == 1):
+        barco(jogada,0)
+    else:
+        barco(jogada,1)
+
 def geraarvore(profundidade):
     solucao = []
     for i in range(0,profundidade):
         solucao.append("*")
     jogada = -1
     fsolucaonova = False #indica quando true a troca de folha ou ramo
+    tentativas = 0
+    sentido = 0
+    #arq = open('dados_busca.txt','a')
     for i in range(0,(6**profundidade)):     
         jogada += 1
+        tentativas += 1
         if(fsolucaonova):
             solucao[jogada] += 1
             fsolucaonova = False
@@ -18,18 +65,43 @@ def geraarvore(profundidade):
                         solucao[jogadaAnterior] = "*"
         else:        
             solucao[jogada] = 0
+        if(i % 2 == 0):
+            sentido = 1
+            barco(jogada[i],sentido)
+        else:
+            sentido = 0
+            barco(jogada[i],sentido)
+        if(objetivo()):
+            break
+        if(mortes()):
+            fsolucaonova = True
+            refaz(solucao[i], sentido)
+
         if(jogada >= profundidade - 1):
             jogada -= 1
             fsolucaonova = True
         print("{ ",i," } ","{ ",jogada+1," } ",solucao)
+        #arq.write('{ ')
+        #arq.write(str(i))
+        #arq.write(' }')
+        #arq.write('{ ')
+        #arq.write(str(jogada + 1))
+        #arq.write(' } ')
+        #arq.write(str(solucao))
+        #arq.write('\n')
         # Ta aqui o zico!!!!! Acabou o chororo
         testeUltimaJogada = True
         for i in range(0,profundidade):
             if(solucao[i] != 4):
-                testeUltimaJogada = False       
+                testeUltimaJogada = False   
         if(testeUltimaJogada):
-            break;
+            break
         testeUltimaJoagada=False
+    #arq.close()
+    print("{ ",tentativas," } ","{ ",jogada+1," } ",solucao)
+    return solucao
 
-        
-geraarvore(4)
+inicio = time.time()
+geraarvore(11)
+fim = time.time()
+print("\nTempo de execução em segundos: ",fim - inicio)
