@@ -31,8 +31,16 @@ def mostrajogo():
             m2.append("C")
         else:
             m2.append("*")
-    print("Margem 1 = ",m1)
+    print("\nMargem 1 = ",m1)
     print("Margem 1 = ",m2)
+    if(mortes()):
+        print("Houve mortes")
+    else:
+        print("Todos estão vivos!")
+    if(objetivo()):
+        print("Objetivo atinjido!\n")
+    else:
+        print("Objetivo não atinjido!\n")
 
 def barco(jogada, dire):
     if(dire == 0):
@@ -58,7 +66,7 @@ def objetivo():
     return False
 
 def mortes():
-    if((quantia[0] < quantia[2]) or (quantia[1] < quantia[3])):
+    if(((quantia[0] < quantia[2]) and quantia[0] != 0) or ((quantia[1] < quantia[3] and quantia[1] != 0))):
         return True
     return False
 
@@ -81,6 +89,7 @@ def geraarvore(profundidade):
         jogada += 1
         tentativas += 1
         if(fsolucaonova):
+            i -= 1
             if(type(solucao[jogada])==str):
                 solucao[jogada] = 0
                 print("------------------------")
@@ -101,13 +110,12 @@ def geraarvore(profundidade):
         else:
             sentido = 0
         if(not(barco(solucao[jogada],sentido))):
-                fsolucaonova = True
+            fsolucaonova = True
+        mostrajogo()
         if(objetivo()):
-            print("Fim de jogo")
             break
         if(mortes()):
             fsolucaonova = True
-            print("Houve mortes")
             refaz(solucao[jogada], sentido)
 
         if(jogada >= profundidade - 1):
@@ -135,7 +143,7 @@ def geraarvore(profundidade):
     return solucao
 
 inicio = time.time()
-mostrajogo()
-#geraarvore(11)
+#mostrajogo()
+geraarvore(11)
 fim = time.time()
 print("\nTempo de execução em segundos: ",fim - inicio)
