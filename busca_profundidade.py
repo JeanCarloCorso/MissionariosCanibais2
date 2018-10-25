@@ -17,6 +17,7 @@ def barco(jogada, dire):
             quantia[1] += opcoesBote[jogada][0]
             quantia[2] -= opcoesBote[jogada][1]
             quantia[3] += opcoesBote[jogada][1]
+            return True
 
     else:
         if((quantia[1] >= opcoesBote[jogada][0]) and (quantia[3] >= opcoesBote[jogada][1])):
@@ -24,6 +25,8 @@ def barco(jogada, dire):
             quantia[0] += opcoesBote[jogada][0]
             quantia[3] -= opcoesBote[jogada][1]
             quantia[2] += opcoesBote[jogada][1]
+            return True
+    return False
 
 def objetivo():
     if(quantia == [0,3,0,3]):
@@ -54,9 +57,13 @@ def geraarvore(profundidade):
         jogada += 1
         tentativas += 1
         if(fsolucaonova):
-            solucao[jogada] += 1
+            if(type(solucao[jogada])==str):
+                solucao[jogada] = 0
+                print("------------------------")
+            else:
+                solucao[jogada] += 1
             fsolucaonova = False
-            if(solucao[jogada]>4):
+            if(solucao[jogada] > 4):
                     for jogadaAnterior in range(jogada,-1,-1):
                         if(solucao[jogadaAnterior] < 4):
                             solucao[jogadaAnterior] += 1
@@ -67,15 +74,17 @@ def geraarvore(profundidade):
             solucao[jogada] = 0
         if(i % 2 == 0):
             sentido = 1
-            barco(jogada[i],sentido)
         else:
             sentido = 0
-            barco(jogada[i],sentido)
+        if(not(barco(solucao[jogada],sentido))):
+                fsolucaonova = True
         if(objetivo()):
+            print("Fim de jogo")
             break
         if(mortes()):
             fsolucaonova = True
-            refaz(solucao[i], sentido)
+            print("Houve mortes")
+            refaz(solucao[jogada], sentido)
 
         if(jogada >= profundidade - 1):
             jogada -= 1
