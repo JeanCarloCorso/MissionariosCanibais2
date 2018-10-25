@@ -10,6 +10,30 @@ opcoesBote = [
     ]
 quantia = [3,0,3,0]
 
+def mostrajogo():
+    m1 = []
+    m2 = []
+    for i in range(1,7):
+        if(quantia[0] >= i):
+            m1.append("P")
+        elif(i < 4):
+            m1.append("*")
+        elif((quantia[2] + 3) >= i):
+            m1.append("C")
+        else:
+            m1.append("*")
+        
+        if(quantia[1] >= i):
+            m2.append("P")
+        elif(i < 4):
+            m2.append("*")
+        elif((quantia[3] + 3) >= i):
+            m2.append("C")
+        else:
+            m2.append("*")
+    print("Margem 1 = ",m1)
+    print("Margem 1 = ",m2)
+
 def barco(jogada, dire):
     if(dire == 0):
         if((quantia[0] >= opcoesBote[jogada][0]) and (quantia[2] >= opcoesBote[jogada][1])):
@@ -111,6 +135,7 @@ def geraarvore(profundidade):
     return solucao
 
 inicio = time.time()
-geraarvore(11)
+mostrajogo()
+#geraarvore(11)
 fim = time.time()
 print("\nTempo de execução em segundos: ",fim - inicio)
