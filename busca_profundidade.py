@@ -43,14 +43,13 @@ def mostrajogo():
         print("Objetivo não atinjido!\n")
 
 def barco(jogada, dire):
-    if(dire == 0):
+    if(dire):
         if((quantia[0] >= opcoesBote[jogada][0]) and (quantia[2] >= opcoesBote[jogada][1])):
             quantia[0] -= opcoesBote[jogada][0]
             quantia[1] += opcoesBote[jogada][0]
             quantia[2] -= opcoesBote[jogada][1]
             quantia[3] += opcoesBote[jogada][1]
             return True
-
     else:
         if((quantia[1] >= opcoesBote[jogada][0]) and (quantia[3] >= opcoesBote[jogada][1])):
             quantia[1] -= opcoesBote[jogada][0]
@@ -71,10 +70,8 @@ def mortes():
     return False
 
 def refaz(jogada, sentido):
-    if(sentido == 1):
-        barco(jogada,0)
-    else:
-        barco(jogada,1)
+    print(type(jogada))
+    barco(jogada, not(sentido))
 
 def geraarvore(profundidade):
     solucao = []
@@ -82,17 +79,20 @@ def geraarvore(profundidade):
         solucao.append("*")
     jogada = -1
     fsolucaonova = False #indica quando true a troca de folha ou ramo
+    refazer = True
     tentativas = 0
     sentido = 0
-    #arq = open('dados_busca.txt','a')
     for i in range(0,(6**profundidade)):     
         jogada += 1
         tentativas += 1
         if(fsolucaonova):
             i -= 1
+            if(refazer):
+                print(solucao[jogada])
+                refaz(solucao[jogada], sentido)
+            refazer = True
             if(type(solucao[jogada])==str):
                 solucao[jogada] = 0
-                print("------------------------")
             else:
                 solucao[jogada] += 1
             fsolucaonova = False
@@ -102,34 +102,30 @@ def geraarvore(profundidade):
                             solucao[jogadaAnterior] += 1
                             jogada = jogadaAnterior 
                             break
-                        solucao[jogadaAnterior] = "*"
+                        solucao[jogadaAnterior] = -1
         else:        
             solucao[jogada] = 0
-        if(i % 2 == 0):
-            sentido = 1
+        if(jogada % 2 == 0):
+            sentido = True
         else:
-            sentido = 0
+            sentido = False
         if(not(barco(solucao[jogada],sentido))):
+            refazer = False
             fsolucaonova = True
+            #refaz(solucao[jogada], not(sentido))
+
+        print("{ ",i," } ","{ ",jogada+1," } ",solucao)
         mostrajogo()
         if(objetivo()):
             break
-        if(mortes()):
+        if(mortes() and not(fsolucaonova)):
             fsolucaonova = True
-            refaz(solucao[jogada], sentido)
+            #refaz(solucao[jogada], not(sentido))
 
         if(jogada >= profundidade - 1):
             jogada -= 1
             fsolucaonova = True
-        print("{ ",i," } ","{ ",jogada+1," } ",solucao)
-        #arq.write('{ ')
-        #arq.write(str(i))
-        #arq.write(' }')
-        #arq.write('{ ')
-        #arq.write(str(jogada + 1))
-        #arq.write(' } ')
-        #arq.write(str(solucao))
-        #arq.write('\n')
+            #refaz(solucao[jogada], not(sentido))
         # Ta aqui o zico!!!!! Acabou o chororo
         testeUltimaJogada = True
         for i in range(0,profundidade):
@@ -138,7 +134,7 @@ def geraarvore(profundidade):
         if(testeUltimaJogada):
             break
         testeUltimaJoagada=False
-    #arq.close()
+        #input()
     print("{ ",tentativas," } ","{ ",jogada+1," } ",solucao)
     return solucao
 
